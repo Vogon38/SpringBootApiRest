@@ -1,12 +1,15 @@
 package com.example.demo.controller;
 
+import com.example.demo.controller.dto.DetalhesDoTopicoDto;
 import com.example.demo.controller.dto.TopicoDto;
+import com.example.demo.controller.form.AtualizacaoTopicoForm;
 import com.example.demo.controller.form.TopicoForm;
 import com.example.demo.modelo.Topico;
 import com.example.demo.repository.CursoRepository;
 import com.example.demo.repository.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -44,5 +47,23 @@ public class TopicosController {
         URI uri = uriBuilder.path("/topicos/{id}").buildAndExpand(topico.getId()).toUri();
         return ResponseEntity.created(uri).body(new TopicoDto(topico));
     }
+
+    @GetMapping("/{id}")
+    public DetalhesDoTopicoDto detalhar(@PathVariable Long id) {
+        Topico topico = topicoRepository.getById(id);
+        return new DetalhesDoTopicoDto(topico);
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<TopicoDto> atualizar(@PathVariable Long id, @RequestBody @Valid AtualizacaoTopicoForm form) {
+        Topico topico = form.atualizar(id, topicoRepository);
+        return ResponseEntity.ok(new TopicoDto(topico));
+    }
+
+//    @PatchMapping("/{id}")
+//    @Transactional
+//    public ResponseEntity<TopicoDto> patch(@PathVariable Long id) {
+//    }
 
 }
